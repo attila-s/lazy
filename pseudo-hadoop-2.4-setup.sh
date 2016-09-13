@@ -70,7 +70,7 @@ limitations under the License. See accompanying LICENSE file.
 </configuration>
 ENDL
 
-cat >etc/hadoop/core-site.xml <<ENDL
+cat >etc/hadoop/mapred-site.xml <<ENDL
 <?xml version="1.0"?>
 <?xml-stylesheet type="text/xsl" href="configuration.xsl"?>
 <!--
