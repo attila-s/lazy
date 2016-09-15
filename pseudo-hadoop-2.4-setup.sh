@@ -1,4 +1,7 @@
 #!/usr/local/bin/bash
+# Prerequisites 
+# java installed, JAVA_HOME set 
+echo export JAVA_HOME=/usr/lib/jvm/java-8-oracle >>/etc/environment 
 
 # Downloads Hadoop 2.4.0 and configures to  run it on a single-node in a pseudo-distributed mode 
 
