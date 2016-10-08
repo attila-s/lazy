@@ -1,6 +1,6 @@
 #!/bin/bash
 
-cat > destinations.txt <END
+cat > destinations.txt <<END
 Alghero (Sardinia)	AHO
 Alicante	ALC
 Baku	GYD
