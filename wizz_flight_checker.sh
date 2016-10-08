@@ -142,7 +142,7 @@ fi
 if [ "${destinations}" != "" ]; then
   echo Using destinations ${destinations} 
 else
-  destinations=$(cat ../airport_codes.txt)
+  destinations=$(cat airport_codes.txt)
 fi
 
 if [ "${output_dir}" != "" ]; then
