@@ -8,7 +8,7 @@ Retrieve flight dates and prices from Wizz Air using its REST API 3.3.2/Api/asse
  -d|--day             start day in format %YYYY-%MM-%DD; defaults to 2016-10-01
  -o|--origin          origin; defaults to BUD
  -p|--period          Number of periods; 1 period equals to 10 days; if start is 2016-10-01 and period is 1 then we search between 2016-10-01 and 2016-10-11
- -dest|--destinations destination(s) using airport codes LTN; defaults to all destinations from BUD
+ -dest|--destinations comma separated list of destinations using airport codes LTN; defaults to all destinations from BUD
  --out                output directory where flight data is downloaded in JSON files (filename format - [destination]_%YYYY-%MM-%DD.out)
  -l|--list            List airport codes available from BUD
 EOF
@@ -70,6 +70,7 @@ setup() {
   fi
 
   if [ "${destinations}" != "" ]; then
+    destinations=(${destinations//,/ })
     echo Using destinations ${destinations} 
   else
     destinations=$(cat airport_codes.txt)
@@ -84,7 +85,7 @@ setup() {
 }
 
 process() {
-  for d in ${destinations}; do 
+  for d in ${destinations[@]}; do 
     day=${start_day};
     for i in $(seq 1 ${period}); do   
       day=$(date '+%Y-%m-%d' -d "$day+10 days");    
@@ -95,62 +96,6 @@ process() {
 
 airports() {
   cat > airports.txt <<END
-Alghero (Sardinia)              AHO
-Alicante                        ALC
-Baku                            GYD
-Barcelona El Prat               BCN
-Bari                            BRI
-Bergen                          BGO
-Birmingham                      BHX
-Bologna                         BLQ
-Bourgas (Black Sea)             BOJ
-Brussels Charleroi              CRL
-Bucharest                       OTP
-Catania (Sicily)                CTA
-Corfu                           CFU
-Dortmund                        DTM
-Dubai                           DWC
-Eindhoven                       EIN
-Faro                            FAO
-Frankfurt Hahn                  HHN
-Fuerteventura (Canary Islands)  FUE
-Glasgow                         GLA
-Gothenburg Landvetter           GOT
-Hanover                         HAJ
-Heraklion (Crete)               HER
-Ibiza                           IBZ
-Karlsruhe/Baden-Baden           FKB
-Kutaisi (Georgia)               KUT
-Kyiv Zhulyany                   IEV
-Lamezia Terme                   SUF
-Lanzarote (Canary Islands)      ACE
-Larnaca (Cyprus)                LCA
-Lisbon                          LIS
-Liverpool                       LPL
-London Luton                    LTN
-Madrid                          MAD
-Malaga                          AGP
-Malmo                           MMX
-Malta                           MLA
-Milan Malpensa                  MXP
-Moscow                          VKO
-Naples                          NAP
-Nice                            NCE
-Palma de Mallorca               PMI
-Porto Airport                   OPO
-Reykjavik                       KEF
-Rhodes                          RHO
-Riga                            RIX
-Rome Fiumicino                  FCO
-Sofia                           SOF
-Stockholm Skavsta               NYO
-Targu Mures                     TGM
-Tel Aviv                        TLV
-Tenerife (Canary Islands)       TFS
-Thessaloniki                    SKG
-Varna (Black Sea)               VAR
-Warsaw Chopin                   WAW
-Zakynthos                       ZTH
 Alghero (Sardinia)              AHO
 Alicante                        ALC
 Baku                            GYD
