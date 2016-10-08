@@ -123,31 +123,31 @@ cat airports.txt | rev| awk '{print $1}' | rev > airport_codes.txt
 
 if [ "${day}" != "" ]; then
   echo Using day ${day}
-elif
+else
   export day=2016-10-01
 fi
 
 if [ "${origin}" != "" ]; then
   echo Using origin ${origin}
-elif
+else
   export origin=BUD
 fi
 
 if [ "${period}" != "" ]; then
   echo Using period ${period}
-elif
+else
   export period=10
 fi
 
 if [ "${destinations}" != "" ]; then
   echo Using destinations ${destinations} 
-elif
+else
   destinations=$(cat ../airport_codes.txt)
 fi
 
 if [ "${output_dir}" != "" ]; then
   echo Using output_dir ${output_dir} 
-elif
+else
   output_dir=report
   mkdir -p ${output_dir}
 fi
