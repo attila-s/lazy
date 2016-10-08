@@ -4,11 +4,15 @@ import json
 
 sys.argv.pop(0)
 
+def printFlights( flight_type ):
+  for f in doc[flight_type]:  
+    if f['price'] is None:
+      continue		
+    print(f['departureStation'] + " " + f['date'] + " " +str(f['price']['amount']))
+
 for arg in sys.argv:
   j=open(arg).read()
   doc=json.loads(j)
 
-  for f in doc['outboundFlights']:  
-    if f['price'] is None:
-      continue	
-    print(f['date'] + " " +str(f['price']['amount']))
+  printFlights('outboundFlights')
+  printFlights('returnFlights')
