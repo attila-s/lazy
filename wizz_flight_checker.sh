@@ -1,9 +1,49 @@
 #!/bin/bash
 
-#
-# Retrieves flight dates and prices from Wizz Air
-#
+display_usage() { 
+cat <<EOF
+Usage: $0 [options]
+Retrieve flight dates and prices from Wizz Air using its REST API 3.3.2/Api/asset/farechart
+ -h| --help           display this help and exit
+ -d|--day             start day
+ -o|--origin          origin, defaults to BUD
+ -p|--period          1 period is 10 days; if start is 2016-10-01 and period is 1 then we search between 2016-10-01 and 2016-10-11
+ -d|--destinations    destination(s) using airport codes LTN; defaults to all destinations from BUD
+ --out                output directory where flight data is downloaded in JSON; filename format - destination_%YYYY-%MM-%DD.out    
+EOF 
+} 
 
+while [[ $# -gt 1 ]]
+do
+key="$1"
+
+parse() {
+  case $key in
+    -d|--day)
+      day="$2"
+      shift 
+    ;;
+    -o|--origin)
+      origin="$2"
+      shift 
+    ;;
+    -p|--period)
+      period="$2"
+      shift
+    ;;    
+    --d|--destinations)
+      destinations="$2"
+    ;;
+    --out)
+      output_dir="$2"
+    ;;
+    *)
+      display_usage
+    ;;
+  esac
+  shift 
+  done
+}  
 cat > airports.txt <<END
 Alghero (Sardinia)	AHO
 Alicante	ALC
