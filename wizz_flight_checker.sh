@@ -11,6 +11,9 @@ Retrieve flight dates and prices from Wizz Air using its REST API 3.3.2/Api/asse
  -dest|--destinations comma separated list of destinations using airport codes LTN; defaults to all destinations from BUD
  --out                output directory where flight data is downloaded in JSON files (filename format - [destination]_%YYYY-%MM-%DD.out)
  -l|--list            List airport codes available from BUD
+
+Examples:
+  $0 --out CANARY -o BUD --dest FUE,ACE,TFS -d 2016-11-02 -p 4
 EOF
   exit
 } 
