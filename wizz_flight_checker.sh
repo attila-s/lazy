@@ -145,7 +145,12 @@ elif
   destinations=$(cat ../airport_codes.txt)
 fi
 
-mkdir -p report
+if [ "${output_dir}" != "" ]; then
+  echo Using output_dir ${output_dir} 
+elif
+  output_dir=report
+  mkdir -p ${output_dir}
+fi
 
 for d in ${destinations}; do 
   day="2016-10-01";
