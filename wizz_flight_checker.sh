@@ -1,6 +1,10 @@
 #!/bin/bash
 
-cat > destinations.txt <<END
+#
+# Retrieves flight dates and prices from Wizz Air
+#
+
+cat > airports.txt <<END
 Alghero (Sardinia)	AHO
 Alicante	ALC
 Baku	GYD
@@ -115,11 +119,38 @@ Warsaw Chopin	WAW
 Zakynthos	ZTH
 END
 
-export day=2017-04-01; 
+cat airports.txt | rev| awk '{print $1}' | rev > airport_codes.txt 
 
-for i in $(seq 1 25); do 
-  day=$(date '+%Y-%m-%d' -d "$day+10 days"); 
-  echo $day; 
-  curl 'https://be.wizzair.com/3.3.2/Api/asset/farechart' -H 'pragma: no-cache' -H 'origin: https://wizzair.com' -H 'accept-encoding: gzip, deflate, br' -H 'accept-language: en-US,en;q=0.8' -H 'user-agent: Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/53.0.2785.116 Safari/537.36' -H 'content-type: application/json' -H 'accept: application/json, text/plain, */*' -H 'cache-control: no-cache' -H 'authority: be.wizzair.com' -H 'cookie: ASP.NET_SessionId=2daurb0kdarwj4lokgrvxznn; _ga=GA1.2.578244284.1475920242; _gat=1' -H 'referer: https://wizzair.com/' --data-binary '{"wdc":false,"flightList":[{"departureStation":"BUD","arrivalStation":"FAO","date":"'$day'"},{"departureStation":"FAO","arrivalStation":"BUD","date":"'$day'"}],"dayInterval":10}' --compressed | tee $day.out
-  sleep $(( ( RANDOM % 3 )  + 1 ))
- done
+if [ "${day}" != "" ]; then
+  echo Using day ${day}
+elif
+  export day=2016-10-01
+fi
+
+if [ "${origin}" != "" ]; then
+  echo Using origin ${origin}
+elif
+  export origin=BUD
+fi
+
+if [ "${period}" != "" ]; then
+  echo Using period ${period}
+elif
+  export period=10
+fi
+
+if [ "${destinations}" != "" ]; then
+  echo Using destinations ${destinations} 
+elif
+  destinations=$(cat ../airport_codes.txt)
+fi
+
+mkdir -p report
+
+for d in ${destinations}; do 
+  day="2016-10-01";
+  for i in $(seq 1 ${period}); do   
+    day=$(date '+%Y-%m-%d' -d "$day+10 days");    
+    curl 'https://be.wizzair.com/3.3.2/Api/asset/farechart' -H 'pragma: no-cache' -H 'origin: https://wizzair.com' -H 'accept-encoding: gzip, deflate, br' -H 'accept-language: en-US,en;q=0.8' -H 'user-agent: Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/53.0.2785.116 Safari/537.36' -H 'content-type: application/json' -H 'accept: application/json, text/plain, */*' -H 'cache-control: no-cache' -H 'authority: be.wizzair.com' -H 'referer: https://wizzair.com/' --data-binary '{"wdc":false,"flightList":[{"departureStation":"'${origin}'","arrivalStation":"'$d'","date":"'$day'"},{"departureStation":"'$d'","arrivalStation":"'${origin}'","date":"'$day'"}],"dayInterval":10}' --compressed | tee report/${d}_${day}.out; 
+  done
+done
