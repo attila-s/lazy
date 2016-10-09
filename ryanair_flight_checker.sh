@@ -3,11 +3,11 @@
 display_usage() { 
   cat <<EOF
 Usage: $0 [options]
-Retrieve flight dates and prices from Ryainair using its REST API
+Retrieve flight dates and prices from Wizz Air using its REST API 3.3.2/Api/asset/farechart
  -h| --help           display this help and exit
  -d|--day             start day in format %YYYY-%MM-%DD; defaults to 2016-10-01
  -o|--origin          origin; defaults to BUD
- -p|--period          Number of periods; 1 period equals to 4 days
+ -p|--period          Number of periods; 1 period equals to 10 days; if start is 2016-10-01 and period is 1 then we search between 2016-10-01 and 2016-10-11
  -dest|--destinations comma separated list of destinations using airport codes LTN; defaults to all destinations from BUD
  --out                output directory where flight data is downloaded in JSON files (filename format - [destination]_%YYYY-%MM-%DD.json)
  -l|--list            List airport codes available from BUD
@@ -91,8 +91,8 @@ process() {
   for d in ${destinations[@]}; do 
     day=${start_day};
     for i in $(seq 1 ${period}); do   
-      next=$(date '+%Y-%m-%d' -d "$day+10 days")    
-      curl "https://desktopapps.ryanair.com/hu-hu/availability?ADT=1&CHD=0&DateIn=${day}&DateOut=${next}&Destination=${d}&FlexDaysIn=0&FlexDaysOut=4&INF=0&Origin=${origin}&RoundTrip=true&TEEN=0" -H "Pragma: no-cache" -H "Origin: https://www.ryanair.com" -H "Accept-Encoding: gzip, deflate, sdch, br" -H "Accept-Language: en-US,en;q=0.8" -H "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/53.0.2785.116 Safari/537.36" -H "Accept: application/json, text/plain, */*" -H "Referer: https://www.ryanair.com/hu/hu/booking/home" -H "Connection: keep-alive" -H "Cache-Control: no-cache" --compressed > ${output_dir}/${origin}-${d}_${day}.json
+      next=$(date '+%Y-%m-%d' -d "$day+4 days")    
+      curl "https://desktopapps.ryanair.com/hu-hu/availability?ADT=1&CHD=0&DateIn=${next}&DateOut=${day}&Destination=${d}&FlexDaysIn=0&FlexDaysOut=4&INF=0&Origin=${origin}&RoundTrip=true&TEEN=0" -H "Pragma: no-cache" -H "Origin: https://www.ryanair.com" -H "Accept-Encoding: gzip, deflate, sdch, br" -H "Accept-Language: en-US,en;q=0.8" -H "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/53.0.2785.116 Safari/537.36" -H "Accept: application/json, text/plain, */*" -H "Referer: https://www.ryanair.com/hu/hu/booking/home" -H "Connection: keep-alive" -H "Cache-Control: no-cache" --compressed > ${output_dir}/${origin}-${d}_${day}.json
       day=${next}
     done
   done
