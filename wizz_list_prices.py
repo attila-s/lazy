@@ -11,8 +11,10 @@ def printFlights( flight_type ):
     print(f['departureStation'] + " " + f['arrivalStation'] + " " + f['date'] + " " +str(f['price']['amount']))
 
 for arg in sys.argv:
-  j=open(arg).read()
-  doc=json.loads(j)
-
-  printFlights('outboundFlights')
-  printFlights('returnFlights')
+  try:
+    j=open(arg).read()
+    doc=json.loads(j)
+    printFlights('outboundFlights')
+    printFlights('returnFlights')
+  except:
+    print arg, 'is strange'
