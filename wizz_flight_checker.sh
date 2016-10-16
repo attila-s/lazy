@@ -3,7 +3,7 @@
 display_usage() { 
   cat <<EOF
 Usage: $0 [options]
-Retrieve flight dates and prices from Wizz Air using its REST API 3.3.2/Api/asset/farechart
+Retrieve flight dates and prices from Wizz Air using its REST API 3.3.3/Api/asset/farechart
  -h| --help           display this help and exit
  -d|--day             start day in format %YYYY-%MM-%DD; defaults to 2016-10-01
  -o|--origin          origin; defaults to BUD
@@ -92,7 +92,7 @@ process() {
     day=${start_day};
     for i in $(seq 1 ${period}); do   
       day=$(date '+%Y-%m-%d' -d "$day+10 days");    
-      curl 'https://be.wizzair.com/3.3.2/Api/asset/farechart' -H 'pragma: no-cache' -H 'origin: https://wizzair.com' -H 'accept-encoding: gzip, deflate, br' -H 'accept-language: en-US,en;q=0.8' -H 'user-agent: Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/53.0.2785.116 Safari/537.36' -H 'content-type: application/json' -H 'accept: application/json, text/plain, */*' -H 'cache-control: no-cache' -H 'authority: be.wizzair.com' -H 'referer: https://wizzair.com/' --data-binary '{"wdc":false,"flightList":[{"departureStation":"'${origin}'","arrivalStation":"'$d'","date":"'$day'"},{"departureStation":"'$d'","arrivalStation":"'${origin}'","date":"'$day'"}],"dayInterval":10}' --compressed > ${output_dir}/${origin}-${d}_${day}.json; 
+      curl 'https://be.wizzair.com/3.3.3/Api/asset/farechart' -H 'pragma: no-cache' -H 'origin: https://wizzair.com' -H 'accept-encoding: gzip, deflate, br' -H 'accept-language: en-US,en;q=0.8' -H 'user-agent: Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/53.0.2785.116 Safari/537.36' -H 'content-type: application/json' -H 'accept: application/json, text/plain, */*' -H 'cache-control: no-cache' -H 'authority: be.wizzair.com' -H 'referer: https://wizzair.com/' --data-binary '{"wdc":false,"flightList":[{"departureStation":"'${origin}'","arrivalStation":"'$d'","date":"'$day'"},{"departureStation":"'$d'","arrivalStation":"'${origin}'","date":"'$day'"}],"dayInterval":10}' --compressed > ${output_dir}/${origin}-${d}_${day}.json; 
     done
   done
 }
