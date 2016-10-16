@@ -41,9 +41,10 @@ def printFlights():
         if price > MAX:
           continue
             
-        #weekday = datetime.datetime.strptime(flight_date, "%Y-%m-%dT%H:%M:%S").strftime("%A")
-
-        print(t['origin'] + " " + t['destination'] + " " + f["time"][0] + " " + str(price) + " " + doc["currency"] ) 
+        flight_date = datetime.datetime.strptime(f["time"][0][:-4], "%Y-%m-%dT%H:%M:%S")
+        weekday = flight_date.strftime("%A")
+        
+        print t['origin'], t['destination'], flight_date, weekday, str(price), doc["currency"]
 
 for arg in args.prices:
   try:
