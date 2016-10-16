@@ -63,7 +63,6 @@ for arg in args.prices:
     printFlights('returnFlights')
   except:
     print arg, 'is strange'
-    raise
     
 for f in sorted(flight_map, key = lambda x : x[2]):
   print('%s %s %s %s\t%s' %f)
