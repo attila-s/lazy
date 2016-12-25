@@ -1,5 +1,7 @@
 #!/bin/bash
 
+DATE_CMD=date
+
 display_usage() { 
   cat <<EOF
 Usage: $0 [options]
@@ -54,6 +56,10 @@ parse() {
 }  
 
 setup() {
+  if [[ "$OSTYPE" == "darwin"* ]]; then
+    command -v gdate >/dev/null 2>&1 || { echo "GNU date but is not installed.  Aborting." >&2; exit 1; }
+    DATE_CMD=gdate 
+  fi
   if [ "${start_day}" != "" ]; then
     echo Using day ${start_day}
   else
@@ -91,7 +97,7 @@ process() {
   for d in ${destinations[@]}; do 
     day=${start_day};
     for i in $(seq 1 ${period}); do   
-      next=$(date '+%Y-%m-%d' -d "$day+4 days")    
+      next=$($DATE_CMD '+%Y-%m-%d' -d "$day+4 days")    
       curl "https://desktopapps.ryanair.com/hu-hu/availability?ADT=1&CHD=0&DateIn=${next}&DateOut=${day}&Destination=${d}&FlexDaysIn=0&FlexDaysOut=4&INF=0&Origin=${origin}&RoundTrip=true&TEEN=0" -H "Pragma: no-cache" -H "Origin: https://www.ryanair.com" -H "Accept-Encoding: gzip, deflate, sdch, br" -H "Accept-Language: en-US,en;q=0.8" -H "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/53.0.2785.116 Safari/537.36" -H "Accept: application/json, text/plain, */*" -H "Referer: https://www.ryanair.com/hu/hu/booking/home" -H "Connection: keep-alive" -H "Cache-Control: no-cache" --compressed > ${output_dir}/${origin}-${d}_${day}.json
       day=${next}
     done
