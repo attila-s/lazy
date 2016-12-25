@@ -54,6 +54,10 @@ parse() {
 }  
 
 setup() {
+  if [[ "$OSTYPE" == "darwin"* ]]; then
+    command -v gdate >/dev/null 2>&1 || { echo "GNU date but is not installed.  Aborting." >&2; exit 1; }
+    alias date=gdate 
+  fi
   if [ "${start_day}" != "" ]; then
     echo Using day ${start_day}
   else
