@@ -1,11 +1,13 @@
 #!/bin/bash
 
+DATE_CMD=date
+
 display_usage() { 
   cat <<EOF
 Usage: $0 [options]
-Retrieve flight dates and prices from Wizz Air using its REST API 3.3.3/Api/asset/farechart
+Retrieve flight dates and prices from Wizz Air using its REST API 3.8.0/Api/asset/farechart
  -h| --help           display this help and exit
- -d|--day             start day in format %YYYY-%MM-%DD; defaults to 2016-10-01
+ -d|--day             start day in format %YYYY-%MM-%DD; defaults to now
  -o|--origin          origin; defaults to BUD
  -p|--period          Number of periods; 1 period equals to 10 days; if start is 2016-10-01 and period is 1 then we search between 2016-10-01 and 2016-10-11
  -dest|--destinations comma separated list of destinations using airport codes LTN; defaults to all destinations from BUD
@@ -13,7 +15,7 @@ Retrieve flight dates and prices from Wizz Air using its REST API 3.3.3/Api/asse
  -l|--list            List airport codes available from BUD
 
 Examples:
-  $0 --out CANARY -o BUD --dest FUE,ACE,TFS -d 2016-11-02 -p 4
+  $0 --out CANARY -o BUD --dest FUE,ACE,TFS -d 2017-01-02 -p 4
 EOF
   exit
 } 
@@ -61,7 +63,7 @@ setup() {
   if [ "${start_day}" != "" ]; then
     echo Using day ${start_day}
   else
-    export start_day=2016-10-01
+    export start_day=$(date '+%Y-%m-%d')
   fi
 
   if [ "${origin}" != "" ]; then
@@ -95,9 +97,20 @@ process() {
   for d in ${destinations[@]}; do 
     day=${start_day};
     for i in $(seq 1 ${period}); do   
-      day=$(date '+%Y-%m-%d' -d "$day+10 days");    
-      curl 'https://be.wizzair.com/3.3.3/Api/asset/farechart' -H 'pragma: no-cache' -H 'origin: https://wizzair.com' -H 'accept-encoding: gzip, deflate, br' -H 'accept-language: en-US,en;q=0.8' -H 'user-agent: Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/53.0.2785.116 Safari/537.36' -H 'content-type: application/json' -H 'accept: application/json, text/plain, */*' -H 'cache-control: no-cache' -H 'authority: be.wizzair.com' -H 'referer: https://wizzair.com/' --data-binary '{"wdc":false,"flightList":[{"departureStation":"'${origin}'","arrivalStation":"'$d'","date":"'$day'"},{"departureStation":"'$d'","arrivalStation":"'${origin}'","date":"'$day'"}],"dayInterval":10}' --compressed > ${output_dir}/${origin}-${d}_${day}.json; 
-    done
+      day=$($DATE_CMD '+%Y-%m-%d' -d "$day+10 days");
+      curl 'https://be.wizzair.com/3.8.0/Api/asset/farechart'\
+        -H 'pragma: no-cache' \
+        -H 'origin: https://wizzair.com'\
+        -H 'accept-encoding: gzip, deflate, br' \
+        -H 'accept-language: en-US,en;q=0.8' \
+        -H 'user-agent: Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/53.0.2785.116 Safari/537.36'\
+        -H 'content-type: application/json' \
+        -H 'accept: application/json, text/plain, */*'\
+        -H 'cache-control: no-cache' -H 'authority: be.wizzair.com'\
+        -H 'referer: https://wizzair.com/'\
+        --data-binary '{"wdc":false,"flightList":[{"departureStation":"'${origin}'","arrivalStation":"'$d'","date":"'$day'"},{"departureStation":"'$d'","arrivalStation":"'${origin}'","date":"'$day'"}],"dayInterval":10,"adultCount":1,"childCount":0}'\
+        --compressed > ${output_dir}/${origin}-${d}_${day}.json;
+      done
   done
 }
 
