@@ -98,7 +98,7 @@ process() {
     day=${start_day};
     for i in $(seq 1 ${period}); do   
       day=$($DATE_CMD '+%Y-%m-%d' -d "$day+10 days");
-      api_version="3.8.1"
+      api_version="4.0.0"
       endpoint="/Api/asset/farechart"
       curl 'https://be.wizzair.com/'${api_version}${endpoint}\
         -H 'pragma: no-cache' \
