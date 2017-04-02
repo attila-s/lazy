@@ -17,6 +17,7 @@ ssh-keygen -t rsa -N "" -f $HOME/.ssh/id_rsa
 /usr/bin/ssh-keygen -q -t dsa -f /etc/ssh/ssh_host_dsa_key -C '' -N ''
 nohup /usr/sbin/sshd -D&
 cat $HOME/.ssh/id_rsa.pub  > $HOME/.ssh/authorized_keys
+USER=$(id -u -n)
 
 # Downloads Hadoop 2.6.0 and configures to  run it on a single-node in a pseudo-distributed mode 
 
@@ -75,11 +76,11 @@ limitations under the License. See accompanying LICENSE file.
     <value>hdfs://localhost:9000</value>
   </property>
   <property>
-    <name>hadoop.proxyuser.vagrant.hosts</name>
+    <name>hadoop.proxyuser.$USER.hosts</name>
     <value>*</value>
   </property>
   <property>
-    <name>hadoop.proxyuser.vagrant.groups</name>
+    <name>hadoop.proxyuser.$USER.groups</name>
     <value>*</value>
   </property>
 </configuration>
@@ -146,7 +147,6 @@ hdfs namenode -format
 /hadoop-2.6.0/sbin/start-all.sh
 
 # Hadoop things
-USER=$(id -u -n)
 hdfs dfs -mkdir -p /user/$USER
 mkdir -p /$USER/input
 cp /hadoop-2.6.0/etc/hadoop/*.xml /$USER/input
