@@ -9,6 +9,15 @@ mv jdk1.7.0_65/ /usr/lib/jvm/
 echo export JAVA_HOME=/usr/lib/jvm/jdk1.7.0_65/ >> /etc/environment
 . /etc/environment
 
+# Set up SSH for passwordless login
+yum install -y openssh-server
+yum install -y openssh-clients
+ssh-keygen -t rsa -N "" -f $HOME/.ssh/id_rsa
+/usr/bin/ssh-keygen -q -t rsa -f /etc/ssh/ssh_host_rsa_key -C '' -N ''
+/usr/bin/ssh-keygen -q -t dsa -f /etc/ssh/ssh_host_dsa_key -C '' -N ''
+nohup /usr/sbin/sshd -D&
+cat $HOME/.ssh/id_rsa.pub  > $HOME/.ssh/authorized_keys
+
 # Downloads Hadoop 2.6.0 and configures to  run it on a single-node in a pseudo-distributed mode 
 
 wget https://archive.apache.org/dist/hadoop/core/hadoop-2.6.0/hadoop-2.6.0.tar.gz
@@ -128,14 +137,6 @@ limitations under the License. See accompanying LICENSE file.
 </configuration>
 ENDL
 
-# Set up SSH for passwordless login
-yum install -y openssh-server
-yum install -y openssh-clients
-ssh-keygen -t rsa -N "" -f $HOME/.ssh/id_rsa
-/usr/bin/ssh-keygen -q -t rsa -f /etc/ssh/ssh_host_rsa_key -C '' -N ''
-/usr/bin/ssh-keygen -q -t dsa -f /etc/ssh/ssh_host_dsa_key -C '' -N ''
-nohup /usr/sbin/sshd -D&
-cat $HOME/.ssh/id_rsa.pub  > $HOME/.ssh/authorized_keys
 # Format namenode and start hadoop
 yum install -y which
 ssh-keyscan -t rsa,dsa localhost,0.0.0.0 2>&1 >> ~/.ssh/known_hosts # doing it here to make sure sshd has been started
