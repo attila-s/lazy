@@ -136,9 +136,7 @@ ssh-keygen -t rsa -N "" -f $HOME/.ssh/id_rsa
 /usr/bin/ssh-keygen -q -t dsa -f /etc/ssh/ssh_host_dsa_key -C '' -N ''
 nohup /usr/sbin/sshd -D&
 cat $HOME/.ssh/id_rsa.pub  > $HOME/.ssh/authorized_keys
-ssh-keyscan -t rsa,dsa localhost 2>&1 > ~/.ssh/known_hosts
-ssh-keyscan -t rsa,dsa 0.0.0.0 2>&1 >> ~/.ssh/known_hosts
-
+ssh-keyscan -t rsa,dsa localhost,0.0.0.0 2>&1 >> ~/.ssh/known_hosts
 # Format namenode and start hadoop
 yum install -y which
 export PATH=/hadoop-2.6.0/bin/:$PATH
@@ -146,7 +144,10 @@ hdfs namenode -format
 /hadoop-2.6.0/sbin/start-all.sh
 
 # Hadoop things
+USER=$(id -u -n)
 hdfs dfs -mkdir -p /user/$USER
-hdfs dfs -put /hadoop-2.6.0/etc/hadoop input
+mkdir -p /$USER/
+cp /hadoop-2.6.0/etc/hadoop/*.xml /$USER/input
+hdfs dfs -put -f /$USER/input
 hadoop jar /hadoop-2.6.0/share/hadoop/mapreduce/hadoop-mapreduce-examples-2.6.0.jar grep input output 'dfs[a-z.]+'
-hdfs dfs -ls /user/root/output/
+hdfs dfs -ls /user/$USER/output/
