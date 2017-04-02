@@ -148,7 +148,7 @@ hdfs namenode -format
 # Hadoop things
 USER=$(id -u -n)
 hdfs dfs -mkdir -p /user/$USER
-mkdir -p /$USER/
+mkdir -p /$USER/input
 cp /hadoop-2.6.0/etc/hadoop/*.xml /$USER/input
 hdfs dfs -put -f /$USER/input
 hadoop jar /hadoop-2.6.0/share/hadoop/mapreduce/hadoop-mapreduce-examples-2.6.0.jar grep input output 'dfs[a-z.]+'
