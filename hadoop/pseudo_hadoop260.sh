@@ -33,13 +33,11 @@ limitations under the License. See accompanying LICENSE file.
 -->
 
 <!-- Put site-specific property overrides in this file. -->
-
-
 <configuration>
-<property>
-<name>dfs.replication</name>
-<value>1</value>
-</property>
+  <property>
+    <name>dfs.replication</name>
+    <value>1</value>
+   </property>
 </configuration>
 ENDL
 
@@ -75,7 +73,6 @@ limitations under the License. See accompanying LICENSE file.
     <name>hadoop.proxyuser.vagrant.groups</name>
     <value>*</value>
   </property>
-
 </configuration>
 ENDL
 
