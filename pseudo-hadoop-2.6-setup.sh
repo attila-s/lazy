@@ -1,13 +1,19 @@
-#!/usr/local/bin/bash
-# Prerequisites 
-# java installed, JAVA_HOME set 
-echo export JAVA_HOME=/usr/lib/jvm/java-8-oracle >>/etc/environment 
+#!/usr/bin/bash
 
-# Downloads Hadoop 2.4.0 and configures to  run it on a single-node in a pseudo-distributed mode 
+# Install JDK7 
+yum install -y wget
+wget --no-cookies --header "Cookie: oraclelicense=accept-securebackup-cookie;" http://download.oracle.com/otn-pub/java/jdk/7u65-b17/jdk-7u65-linux-x64.tar.gz
+tar xf jdk-7u65-linux-x64.tar.gz
+mkdir -p /usr/lib/jvm/
+mv jdk1.7.0_65/ /usr/lib/jvm/
+echo export JAVA_HOME=/usr/lib/jvm/jdk1.7.0_65/ >> /etc/environment
+. /etc/environment
 
-wget https://archive.apache.org/dist/hadoop/core/hadoop-2.4.0/hadoop-2.4.0.tar.gz
-tar xf hadoop-2.4.0.tar.gz
-cd hadoop-2.4.0
+# Downloads Hadoop 2.6.0 and configures to  run it on a single-node in a pseudo-distributed mode 
+
+wget https://archive.apache.org/dist/hadoop/core/hadoop-2.6.0/hadoop-2.6.0.tar.gz
+tar xf hadoop-2.6.0.tar.gz
+cd hadoop-2.6.0
 
 cat >etc/hadoop/hdfs-site.xml <<ENDL
 <?xml version="1.0" encoding="UTF-8"?>
@@ -57,18 +63,18 @@ limitations under the License. See accompanying LICENSE file.
 <!-- Put site-specific property overrides in this file. -->
 
 <configuration>
-<property>
-<name>fs.defaultFS</name>
-<value>hdfs://localhost:9000</value>
-</property>
-<property>
-<name>hadoop.proxyuser.vagrant.hosts</name>
-<value>*</value>
-</property>
-<property>
-<name>hadoop.proxyuser.vagrant.groups</name>
-<value>*</value>
-</property>
+  <property>
+    <name>fs.defaultFS</name>
+    <value>hdfs://localhost:9000</value>
+  </property>
+  <property>
+    <name>hadoop.proxyuser.vagrant.hosts</name>
+    <value>*</value>
+  </property>
+  <property>
+    <name>hadoop.proxyuser.vagrant.groups</name>
+    <value>*</value>
+  </property>
 
 </configuration>
 ENDL
@@ -93,14 +99,14 @@ limitations under the License. See accompanying LICENSE file.
 <!-- Put site-specific property overrides in this file. -->
 
 <configuration>
-<property>
-<name>mapreduce.framework.name</name>
-<value>yarn</value>
-</property>
+  <property>
+    <name>mapreduce.framework.name</name>
+    <value>yarn</value>
+  </property>
 </configuration>
 ENDL
 
-cat >etc/hadoop/yarn-stie.xml<<ENDL
+cat >etc/hadoop/yarn-site.xml<<ENDL
 <?xml version="1.0"?>
 <!--
 Licensed under the Apache License, Version 2.0 (the "License");
@@ -118,20 +124,32 @@ limitations under the License. See accompanying LICENSE file.
 
 <!-- Site specific YARN configuration properties -->
 <configuration>
-<property>
-<name>yarn.nodemanager.aux-services</name>
-<value>mapreduce_shuffle</value>
-</property>
+  <property>
+    <name>yarn.nodemanager.aux-services</name>
+    <value>mapreduce_shuffle</value>
+  </property>
 </configuration>
 ENDL
 
-bin/hdfs namenode -format
-sbin/start-dfs.sh
+# Set up SSH for passwordless login
+yum install -y openssh-server
+yum install -y openssh-clients
+ssh-keygen -t rsa -N "" -f $HOME/.ssh/id_rsa
+/usr/bin/ssh-keygen -q -t rsa -f /etc/ssh/ssh_host_rsa_key -C '' -N ''
+/usr/bin/ssh-keygen -q -t dsa -f /etc/ssh/ssh_host_dsa_key -C '' -N ''
+nohup /usr/sbin/sshd -D&
+cat $HOME/.ssh/id_rsa.pub  > $HOME/.ssh/authorized_keys
+ssh-keyscan -t rsa,dsa localhost 2>&1 > ~/.ssh/known_hosts
+ssh-keyscan -t rsa,dsa 0.0.0.0 2>&1 >> ~/.ssh/known_hosts
 
+# Format namenode and start hadoop
+yum install -y which
+export PATH=/hadoop-2.6.0/bin/:$PATH
+hdfs namenode -format
+/hadoop-2.6.0/sbin/start-all.sh
 
-bin/hdfs dfs -mkdir /user
-bin/hdfs dfs -mkdir /user/asasvari
-
-bin/hdfs dfs -put etc/hadoop input
-bin/hadoop jar share/hadoop/mapreduce/hadoop-mapreduce-examples-2.4.0.jar grep input output 'dfs[a-z.]+'
-bin/hdfs dfs -cat output/*
+# Hadoop things
+hdfs dfs -mkdir -p /user/$USER
+hdfs dfs -put /hadoop-2.6.0/etc/hadoop input
+hadoop jar /hadoop-2.6.0/share/hadoop/mapreduce/hadoop-mapreduce-examples-2.6.0.jar grep input output 'dfs[a-z.]+'
+hdfs dfs -ls /user/root/output/
