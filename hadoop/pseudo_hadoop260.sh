@@ -130,11 +130,30 @@ limitations under the License. See accompanying LICENSE file.
 -->
 
 <!-- Site specific YARN configuration properties -->
-<configuration>
-  <property>
-    <name>yarn.nodemanager.aux-services</name>
-    <value>mapreduce_shuffle</value>
-  </property>
+<configuration> 
+        <property>
+                <name>yarn.nodemanager.aux-services.mapreduce.shuffle.class</name>
+                <value>org.apache.hadoop.mapred.ShuffleHandler</value>
+        </property>
+        <property>
+                <name>yarn.nodemanager.aux-services</name>
+                <value>mapreduce_shuffle</value>
+        </property>
+        <property>
+                <name>yarn.log-aggregation-enable</name>
+                <value>true</value>
+        </property>
+        <property>
+                <name>yarn.nodemanager.delete.debug-delay-sec</name>
+                <value>100000</value>
+        </property>
+
+
+        <property>
+                <description>Where to aggregate logs to.</description>
+                <name>yarn.nodemanager.remote-app-log-dir</name>
+                <value>/tmp/logs</value>
+        </property>
 </configuration>
 ENDL
 
