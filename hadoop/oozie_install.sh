@@ -51,6 +51,10 @@ tar xf oozie-sharelib-4.4.0-SNAPSHOT.tar.gz
 yes | cp /hadoop-2.6.0/etc/hadoop/core-site.xml conf/hadoop-conf/
 bin/oozie-setup.sh sharelib create -fs hdfs://localhost:9000 -locallib share -concurrency 4
 /hadoop-2.6.0/bin/hdfs dfs -put examples/
+
+mkdir libext
+curl http://archive.cloudera.com/gplextras/misc/ext-2.2.zip -o libext/ext-2.2.zip
+
 bin/oozied.sh start
 JOB_ID=$(bin/oozie job -oozie http://localhost:11000/oozie -config examples/apps/shell/job.properties \
 -run -DnameNode=hdfs://localhost:9000 -DjobTracker=localhost:8032 | cut -d" " -f2)
