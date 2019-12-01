@@ -147,8 +147,10 @@ limitations under the License. See accompanying LICENSE file.
                 <name>yarn.nodemanager.delete.debug-delay-sec</name>
                 <value>100000</value>
         </property>
-
-
+        <property>
+                <name>yarn.nodemanager.vmem-check-enabled</name>
+                <value>false</value>
+        </property>
         <property>
                 <description>Where to aggregate logs to.</description>
                 <name>yarn.nodemanager.remote-app-log-dir</name>
