@@ -16,3 +16,19 @@ Class loading
 ```
 -verbose:class
 ```
+
+YARN applications don't start due to resource limitations: review + modify checks & limits in `yarn-site.xml`
+```
+       <property>
+                <name>yarn.nodemanager.vmem-check-enabled</name>
+                <value>false</value>
+        </property>
+        <property>
+                <name>yarn.nodemanager.resource.memory-mb</name>
+                <value>100000</value>
+        </property>
+         <property>
+                 <name>yarn.nodemanager.resource.cpu-vcores</name>
+                <value>20</value>
+        </property>
+```
