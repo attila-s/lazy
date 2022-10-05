@@ -1,6 +1,8 @@
 # random set of scripts and tricks and one liners
 
 ## Forward traffic via socat to another port
+socat is a weapon. Read: https://www.redhat.com/sysadmin/getting-started-socat
+
 - terminal 1: start the proxy process. It will TCP traffic on a port and forward it to another
 ```
 socat -d -d tcp-listen:8081,reuseaddr,fork tcp:localhost:8082
